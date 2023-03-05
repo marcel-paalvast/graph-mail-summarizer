@@ -17,10 +17,12 @@ namespace mail_summarizer_api.Functions
     public class Api
     {
         private readonly ISummarizer _summarizer;
+        private readonly IMailService _mailService;
 
-        public Api(ISummarizer summarizer)
+        public Api(ISummarizer summarizer, IMailService mailService)
         {
             _summarizer = summarizer;
+            _mailService = mailService;
         }
 
         [FunctionName("summarize")]
@@ -55,6 +57,16 @@ namespace mail_summarizer_api.Functions
             var summarization = await _summarizer.SummarizeAsync(data);
 
             return new OkObjectResult(summarization);
+        }
+
+        [FunctionName("mails")]
+        public async Task<IActionResult> GetMails(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            await _mailService.GetMailAsync(null);
+
+            return new OkObjectResult("OK");
         }
     }
 }

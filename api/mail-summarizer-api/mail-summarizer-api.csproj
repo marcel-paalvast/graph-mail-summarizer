@@ -4,11 +4,19 @@
     <LangVersion>11.0</LangVersion>
     <AzureFunctionsVersion>v4</AzureFunctionsVersion>
     <RootNamespace>mail_summarizer_api</RootNamespace>
+    <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Graph" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.50.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1" />
   </ItemGroup>
+  <!--<ItemGroup>
+    <FunctionsPreservedDependencies Include="System.Text.Json.dll" />
+    <FunctionsPreservedDependencies Include="System.Diagnostics.DiagnosticSource.dll" />
+    <FunctionsPreservedDependencies Include="System.Text.Encodings.Web" />
+  </ItemGroup>-->
   <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
