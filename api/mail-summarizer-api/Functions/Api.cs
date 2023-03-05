@@ -10,13 +10,21 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using mail_summarizer_api.Models;
+using mail_summarizer_api.Services;
 
 namespace mail_summarizer_api.Functions
 {
-    public static class Api
+    public class Api
     {
+        private readonly ISummarizer _summarizer;
+
+        public Api(ISummarizer summarizer)
+        {
+            _summarizer = summarizer;
+        }
+
         [FunctionName("summarize")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Summarize(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
@@ -30,6 +38,23 @@ namespace mail_summarizer_api.Functions
             string responseMessage = $"Retrieving mail from {data.From:yyyy-MM-dd HH:mm:ss} to {data.To:yyyy-MM-dd HH:mm:ss}";
 
             return new OkObjectResult(responseMessage);
+        }
+
+        [FunctionName("summarize-text")]
+        public async Task<IActionResult> SummarizeText(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            var data = await JsonSerializer.DeserializeAsync<string>(req.Body);
+            var results = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(data, new ValidationContext(data), results, true))
+            {
+                return new BadRequestObjectResult(string.Join(' ', results));
+            }
+
+            var summarization = await _summarizer.SummarizeAsync(data);
+
+            return new OkObjectResult(summarization);
         }
     }
 }
