@@ -64,7 +64,11 @@ namespace mail_summarizer_api.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            await _mailService.GetMailAsync(null);
+            await _mailService.GetMailAsync(new() 
+            { 
+                Top = 100,
+                MailFolder = "Inbox",
+            });
 
             return new OkObjectResult("OK");
         }

@@ -38,7 +38,7 @@ internal class OnBehalfOfAuthProvider : IAuthenticationProvider
 
         var token = GetAccessToken(accessor.HttpContext.Request) ?? throw new ArgumentException("Expected authorization header");
         var assertion = new UserAssertion(token);
-        var result = await _cca.AcquireTokenOnBehalfOf(_scopes, assertion).ExecuteAsync();
+        var result = await _cca.AcquireTokenOnBehalfOf(_scopes, assertion).ExecuteAsync(cancellationToken);
 
         request.Headers.Add("Authorization", $"Bearer {result.AccessToken}");
     }

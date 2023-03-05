@@ -21,19 +21,29 @@ public class GraphMailService : IMailService
 {
     private readonly GraphServiceClient _client;
 
-    public GraphMailService(IServiceProvider serviceProvider, IOptions<GraphSettings> options)
+    public GraphMailService(HttpClient httpClient, IServiceProvider serviceProvider, IOptions<GraphSettings> options)
     {
         var scopes = new[] { "Mail.Read", "Mail.Send" };
         var authProvider = new OnBehalfOfAuthProvider(options.Value, scopes, serviceProvider);
-        _client = new GraphServiceClient(authProvider);
+        _client = new GraphServiceClient(httpClient, authProvider);
     }
 
     public async Task GetMailAsync(GetMailOptions options)
     {
-        var request = await _client
+        options ??= new();
+        options.From ??= DateTime.MinValue;
+        options.To ??= DateTime.MaxValue;
+
+        var response = await _client
             .Me
+            .MailFolders[options.MailFolder]
             .Messages
-            .GetAsync();
+            .GetAsync(c =>
+            {
+                c.Headers.Add("Prefer", "outlook.body-content-type='text'");
+                c.QueryParameters.Top = options.Top;
+                c.QueryParameters.Filter = $"ReceivedDateTime ge {options.From:yyyy-MM-ddTHH:mm:ssZ} and ReceivedDateTime lt {options.To:yyyy-MM-ddTHH:mm:ssZ}";
+            });
     }
 
     public Task SendMailAsync(Mail mail)
