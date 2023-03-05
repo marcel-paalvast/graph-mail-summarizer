@@ -20,8 +20,12 @@ public class Startup : FunctionsStartup
         {
             config.GetSection("Graph").Bind(settings);
         });
-
-        builder.Services.AddSingleton<ISummarizer, SimpleSummarizer>();
         builder.Services.AddSingleton<IMailService, GraphMailService>();
+
+        builder.Services.AddOptions<OpenAiSettings>().Configure<IConfiguration>((settings, config) =>
+        {
+            config.GetSection("OpenAi").Bind(settings);
+        });
+        builder.Services.AddSingleton<ISummarizeService, OpenAiSummarizeService>();
     }
 }

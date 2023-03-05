@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace mail_summarizer_api.Services;
-public interface ISummarizer
+public interface ISummarizeService
 {
     Task<string> SummarizeAsync(string message);
 }

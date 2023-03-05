@@ -7,16 +7,13 @@
     <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Betalgo.OpenAI.GPT3" Version="6.7.1" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Graph" Version="5.0.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.50.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1" />
+    <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
   </ItemGroup>
-  <!--<ItemGroup>
-    <FunctionsPreservedDependencies Include="System.Text.Json.dll" />
-    <FunctionsPreservedDependencies Include="System.Diagnostics.DiagnosticSource.dll" />
-    <FunctionsPreservedDependencies Include="System.Text.Encodings.Web" />
-  </ItemGroup>-->
   <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

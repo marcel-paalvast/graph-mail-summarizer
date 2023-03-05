@@ -17,10 +17,10 @@ namespace mail_summarizer_api.Functions
 {
     public class Api
     {
-        private readonly ISummarizer _summarizer;
+        private readonly ISummarizeService _summarizer;
         private readonly IMailService _mailService;
 
-        public Api(ISummarizer summarizer, IMailService mailService)
+        public Api(ISummarizeService summarizer, IMailService mailService)
         {
             _summarizer = summarizer;
             _mailService = mailService;
