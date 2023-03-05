@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33414.496
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mail-summarizer-api", "mail-summarizer-api\mail-summarizer-api.csproj", "{B2FCA20A-9D38-441C-9F88-2A1071A58625}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B2FCA20A-9D38-441C-9F88-2A1071A58625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2FCA20A-9D38-441C-9F88-2A1071A58625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2FCA20A-9D38-441C-9F88-2A1071A58625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2FCA20A-9D38-441C-9F88-2A1071A58625}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {49A10545-55CA-4CD3-B9B6-262003F942BB}
+	EndGlobalSection
+EndGlobal
