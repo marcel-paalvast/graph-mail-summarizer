@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using mail_summarizer_api.Models;
 using mail_summarizer_api.Services;
+using System.Linq;
 
 namespace mail_summarizer_api.Functions
 {
@@ -64,13 +65,13 @@ namespace mail_summarizer_api.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            await _mailService.GetMailAsync(new() 
+            var mails = await _mailService.GetMailAsync(new() 
             { 
                 Top = 100,
                 MailFolder = "Inbox",
             });
 
-            return new OkObjectResult("OK");
+            return new OkObjectResult(string.Join(" & ", mails.Select(x => x.Subject)));
         }
     }
 }

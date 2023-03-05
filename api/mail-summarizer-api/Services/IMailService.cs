@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace mail_summarizer_api.Services;
 public interface IMailService
 {
-    Task GetMailAsync(GetMailOptions options);
+    Task<IEnumerable<Mail>> GetMailAsync(GetMailOptions options);
 
     Task SendMailAsync(Mail mail);
 }
