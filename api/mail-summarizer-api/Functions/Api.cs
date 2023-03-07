@@ -106,5 +106,27 @@ namespace mail_summarizer_api.Functions
                 return response;
             }
         }
+
+        [Function(nameof(SendMail))]
+        public async Task<HttpResponseData> SendMail(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "send")] HttpRequestData req,
+            ILogger log)
+        {
+            await _mailService.SendMailAsync(new SendMail()
+            {
+                Body = "This is a test mail",
+                Recipient = "...",
+                Subject = "Test",
+            });
+
+            {
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString("Sent!");
+
+                return response;
+            }
+        }
     }
 }

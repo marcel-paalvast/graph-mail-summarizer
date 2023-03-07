@@ -8,6 +8,7 @@ using System.Threading;
 using mail_summarizer_api.Models;
 using Microsoft.Extensions.Options;
 using mail_summarizer_api.Settings;
+using Microsoft.Graph.Models;
 
 namespace mail_summarizer_api.Services;
 public class GraphMailService : IMailService
@@ -49,8 +50,25 @@ public class GraphMailService : IMailService
             }) ?? Enumerable.Empty<Mail>();
     }
 
-    public Task SendMailAsync(Mail mail)
+    public async Task SendMailAsync(SendMail mail)
     {
-        throw new NotImplementedException();
+        var message = new Message
+        {
+            Subject = mail.Subject,
+            Body = new()
+            {
+                ContentType = BodyType.Text,
+                Content = mail.Body,
+            },
+            ToRecipients = new()
+            {
+                new Recipient { EmailAddress = new EmailAddress { Address = mail.Recipient }},
+            }
+        };
+
+        await _client
+            .Me
+            .SendMail
+            .PostAsync(new() { Message = message });
     }
 }

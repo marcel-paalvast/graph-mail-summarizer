@@ -10,5 +10,5 @@ public interface IMailService
 {
     Task<IEnumerable<Mail>> GetMailAsync(GetMailOptions options);
 
-    Task SendMailAsync(Mail mail);
+    Task SendMailAsync(SendMail mail);
 }
