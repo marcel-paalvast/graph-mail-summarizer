@@ -2,7 +2,7 @@
   "profiles": {
     "mail_summarizer_api": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7205",
+      "commandLineArgs": "--port 7054",
       "launchBrowser": false
     }
   }

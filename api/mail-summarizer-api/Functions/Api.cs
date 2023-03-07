@@ -1,10 +1,5 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,57 +7,86 @@ using System.Text.Json;
 using mail_summarizer_api.Models;
 using mail_summarizer_api.Services;
 using System.Linq;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
+using System.Net;
 
 namespace mail_summarizer_api.Functions
 {
     public class Api
     {
+        private readonly ILogger<Api> _logger;
         private readonly ISummarizeService _summarizer;
         private readonly IMailService _mailService;
 
-        public Api(ISummarizeService summarizer, IMailService mailService)
+        public Api(ILoggerFactory loggerFactory, ISummarizeService summarizer, IMailService mailService)
         {
+            _logger = loggerFactory.CreateLogger<Api>();
             _summarizer = summarizer;
             _mailService = mailService;
         }
 
-        [FunctionName("summarize")]
-        public async Task<IActionResult> Summarize(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+        [Function(nameof(Summarize))]
+        public async Task<HttpResponseData> Summarize(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "summarize")] HttpRequestData req,
             ILogger log)
         {
             var data = await JsonSerializer.DeserializeAsync<GetSummarization>(req.Body);
             var results = new List<ValidationResult>();
-            if (!Validator.TryValidateObject(data, new ValidationContext(data), results, true))
+            if (data is null || !Validator.TryValidateObject(data, new ValidationContext(data), results, true))
             {
-                return new BadRequestObjectResult(string.Join(' ', results));
+                var response = req.CreateResponse(HttpStatusCode.BadRequest);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString(string.Join(' ', results));
+
+                return response;
             }
 
             string responseMessage = $"Retrieving mail from {data.From:yyyy-MM-dd HH:mm:ss} to {data.To:yyyy-MM-dd HH:mm:ss}";
 
-            return new OkObjectResult(responseMessage);
+            {
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString(responseMessage);
+
+                return response;
+            }
         }
 
-        [FunctionName("summarize-text")]
-        public async Task<IActionResult> SummarizeText(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+        [Function(nameof(SummarizeText))]
+        public async Task<HttpResponseData> SummarizeText(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "summarize-text")] HttpRequestData req,
             ILogger log)
         {
             var data = await JsonSerializer.DeserializeAsync<string>(req.Body);
             var results = new List<ValidationResult>();
-            if (!Validator.TryValidateObject(data, new ValidationContext(data), results, true))
+            if (data is null || !Validator.TryValidateObject(data, new ValidationContext(data), results, true))
             {
-                return new BadRequestObjectResult(string.Join(' ', results));
+                var response = req.CreateResponse(HttpStatusCode.BadRequest);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString(string.Join(' ', results));
+
+                return response;
             }
 
             var summarization = await _summarizer.SummarizeAsync(data);
 
-            return new OkObjectResult(summarization);
+            {
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString(summarization);
+
+                return response;
+            }
         }
 
-        [FunctionName("mails")]
-        public async Task<IActionResult> GetMails(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+        [Function(nameof(GetMails))]
+        public async Task<HttpResponseData> GetMails(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "mails")] HttpRequestData req,
             ILogger log)
         {
             var mails = await _mailService.GetMailAsync(new() 
@@ -71,7 +95,16 @@ namespace mail_summarizer_api.Functions
                 MailFolder = "Inbox",
             });
 
-            return new OkObjectResult(string.Join(" & ", mails.Select(x => x.Subject)));
+            var subjects = string.Join(" & ", mails.Select(x => x.Subject));
+
+            {
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString(subjects);
+
+                return response;
+            }
         }
     }
 }

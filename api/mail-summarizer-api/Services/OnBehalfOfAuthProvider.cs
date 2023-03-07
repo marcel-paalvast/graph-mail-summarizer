@@ -1,7 +1,5 @@
 ﻿using mail_summarizer_api.Settings;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Client;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Microsoft.Kiota.Abstractions;
 using System;
@@ -10,6 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client;
+using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.Functions.Worker;
+using mail_summarizer_api.Middleware.Context;
 
 namespace mail_summarizer_api.Services;
 internal class OnBehalfOfAuthProvider : IAuthenticationProvider
@@ -31,21 +33,22 @@ internal class OnBehalfOfAuthProvider : IAuthenticationProvider
 
     public async Task AuthenticateRequestAsync(
         RequestInformation request,
-        Dictionary<string, object> additionalAuthenticationContext = null,
+        Dictionary<string, object>? additionalAuthenticationContext = null,
         CancellationToken cancellationToken = default)
     {
-        var accessor = _serviceProvider.GetService<IHttpContextAccessor>();
+        var context = _serviceProvider.GetService<IFunctionContextAccessor>()?.FunctionContext ?? throw new ArgumentException("Could not retrieve HttpContext");
 
-        var token = GetAccessToken(accessor.HttpContext.Request) ?? throw new ArgumentException("Expected authorization header");
+        var userRequest = await context.GetHttpRequestDataAsync() ?? throw new ArgumentException("Could not retrieve request");
+        var token = GetAccessToken(userRequest) ?? throw new ArgumentException("Expected authorization header");
         var assertion = new UserAssertion(token);
         var result = await _cca.AcquireTokenOnBehalfOf(_scopes, assertion).ExecuteAsync(cancellationToken);
 
         request.Headers.Add("Authorization", $"Bearer {result.AccessToken}");
     }
 
-    private static string GetAccessToken(HttpRequest request)
+    private static string? GetAccessToken(HttpRequestData request)
     {
-        if (!request.Headers.TryGetValue("Authorization", out var headers))
+        if (!request.Headers.TryGetValues("Authorization", out var headers))
         {
             return null;
         }

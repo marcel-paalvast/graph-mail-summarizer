@@ -2,19 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using mail_summarizer_api.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using mail_summarizer_api.Settings;
-using Microsoft.Identity.Client;
-using Microsoft.Kiota.Abstractions;
-using Microsoft.Kiota.Abstractions.Authentication;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace mail_summarizer_api.Services;
 public class GraphMailService : IMailService
@@ -46,14 +39,14 @@ public class GraphMailService : IMailService
                 c.QueryParameters.Filter = $"ReceivedDateTime ge {options.From:yyyy-MM-ddTHH:mm:ssZ} and ReceivedDateTime lt {options.To:yyyy-MM-ddTHH:mm:ssZ}";
             });
 
-        return response
-            .Value
+        return response?
+            .Value?
             .Select(x => new Mail
             {
-                Body = x.Body.Content,
+                Body = x.Body?.Content,
                 Subject = x.Subject,
-                Sender = $"{x.Sender.EmailAddress.Name} ({x.Sender.EmailAddress.Address})",
-            });
+                Sender = $"{x.Sender?.EmailAddress?.Name} ({x.Sender?.EmailAddress?.Address})",
+            }) ?? Enumerable.Empty<Mail>();
     }
 
     public Task SendMailAsync(Mail mail)
