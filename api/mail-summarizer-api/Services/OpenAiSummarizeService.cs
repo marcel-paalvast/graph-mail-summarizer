@@ -30,10 +30,13 @@ internal class OpenAiSummarizeService : ISummarizeService
             {
                 Messages = new List<ChatMessage>()
                 { 
-                    ChatMessage.FromAssistance($"Summarize this mail in <144 chars"),
+                    ChatMessage.FromUser($"Summarize in <128 chars"),
                     ChatMessage.FromUser(message),
                 },
                 Model = OpenAI.GPT3.ObjectModels.Models.ChatGpt3_5Turbo,
+                MaxTokens = 250,
+                Temperature = 0.1f,
+                FrequencyPenalty = 1.5f,
             });
 
         if (response.Successful)
