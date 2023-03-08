@@ -1,3 +1,4 @@
+using mail_summarizer_api.Middleware.Authorization;
 using mail_summarizer_api.Middleware.Context;
 using mail_summarizer_api.Services;
 using mail_summarizer_api.Settings;
@@ -9,6 +10,7 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(s =>
     {
         s.UseMiddleware<FunctionContextMiddleware>();
+        s.UseMiddleware<AzureAuthenticationMiddleware>();
     })
     .ConfigureServices(s =>
     {

@@ -10,6 +10,7 @@ using System.Linq;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Net;
+using mail_summarizer_api.Middleware.Authorization;
 
 namespace mail_summarizer_api.Functions
 {
@@ -84,6 +85,7 @@ namespace mail_summarizer_api.Functions
             }
         }
 
+        [Authorize]
         [Function(nameof(GetMails))]
         public async Task<HttpResponseData> GetMails(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "mails")] HttpRequestData req,
