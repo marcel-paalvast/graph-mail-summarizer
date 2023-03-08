@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace mail_summarizer_api.Models;
 public record SendMail
 {
-    public string? Subject { get; set; }
-    public string? Recipient { get; set; }
-    public string? Body { get; set; }
+    public required string? Subject { get; set; }
+    public required string? Recipient { get; set; }
+    public required string? Body { get; set; }
 }
