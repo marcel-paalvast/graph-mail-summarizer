@@ -16,6 +16,7 @@ var host = new HostBuilder()
     {
         s.AddSingleton<IFunctionContextAccessor, FunctionContextAccessor>();
         s.AddHttpClient();
+
         s.AddOptions<GraphSettings>().Configure<IConfiguration>((settings, config) =>
         {
             config.GetSection("Graph").Bind(settings);
@@ -27,6 +28,8 @@ var host = new HostBuilder()
             config.GetSection("OpenAi").Bind(settings);
         });
         s.AddSingleton<ISummarizeService, OpenAiSummarizeService>();
+
+        s.AddSingleton<IMailGeneratorService, BasicMailGeneratorService>();
     })
     .Build();
 

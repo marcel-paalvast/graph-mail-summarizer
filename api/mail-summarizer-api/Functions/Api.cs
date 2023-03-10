@@ -19,12 +19,18 @@ namespace mail_summarizer_api.Functions
         private readonly ILogger<Api> _logger;
         private readonly ISummarizeService _summarizer;
         private readonly IMailService _mailService;
+        private readonly IMailGeneratorService _mailGenerator;
 
-        public Api(ILoggerFactory loggerFactory, ISummarizeService summarizer, IMailService mailService)
+        public Api(
+            ILoggerFactory loggerFactory, 
+            ISummarizeService summarizer, 
+            IMailService mailService,
+            IMailGeneratorService mailGenerator)
         {
             _logger = loggerFactory.CreateLogger<Api>();
             _summarizer = summarizer;
             _mailService = mailService;
+            _mailGenerator = mailGenerator;
         }
 
         [Function(nameof(Summarize))]
@@ -117,6 +123,50 @@ namespace mail_summarizer_api.Functions
             await _mailService.SendMailAsync(new SendMail()
             {
                 Body = "This is a test mail",
+                Recipient = "...",
+                Subject = "Test",
+            });
+
+            {
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString("Sent!");
+
+                return response;
+            }
+        }
+
+        [Function(nameof(GenerateMail))]
+        public async Task<HttpResponseData> GenerateMail(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "generate")] HttpRequestData req,
+            ILogger log)
+        {
+            var mail = _mailGenerator.Create(new(), new List<MailSummary>()
+            {
+                new()
+                {
+                    Mail = new()
+                    {
+                        Sender = "Name#1",
+                        Subject = "Proposal",
+                    },
+                    Summary = "Could you give feedback on the following proposal.",
+                },
+                new()
+                {
+                    Mail = new()
+                    {
+                        Sender = "Name#2",
+                        Subject = "Meeting",
+                    },
+                    Summary = "This is a summary of a very long mail.\nWith newline!",
+                },
+            });
+
+            await _mailService.SendMailAsync(new SendMail()
+            {
+                Body = mail,
                 Recipient = "...",
                 Subject = "Test",
             });
