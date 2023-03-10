@@ -35,7 +35,7 @@ public class GraphMailService : IMailService
             .GetAsync(c =>
             {
                 c.Headers.Add("Prefer", "outlook.body-content-type='text'");
-                c.QueryParameters.Select = new[] { "subject", "body", "sender", "createdDateTime" };
+                c.QueryParameters.Select = new[] { "subject", "body", "from", "createdDateTime" };
                 c.QueryParameters.Top = options.Top;
                 c.QueryParameters.Filter = $"ReceivedDateTime ge {options.From:yyyy-MM-ddTHH:mm:ssZ} and ReceivedDateTime lt {options.To:yyyy-MM-ddTHH:mm:ssZ}";
             });
@@ -48,7 +48,7 @@ public class GraphMailService : IMailService
                 CreatedDateTime = x.CreatedDateTime,
                 Body = x.Body?.Content,
                 Subject = x.Subject,
-                Sender = $"{x.Sender?.EmailAddress?.Name} ({x.Sender?.EmailAddress?.Address})",
+                Sender = $"{x.From?.EmailAddress?.Name} ({x.From?.EmailAddress?.Address})",
             }) ?? Enumerable.Empty<Mail>();
     }
 
