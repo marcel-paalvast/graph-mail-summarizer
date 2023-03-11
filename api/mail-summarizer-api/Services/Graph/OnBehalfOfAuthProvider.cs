@@ -13,7 +13,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker;
 using mail_summarizer_api.Middleware.Context;
 
-namespace mail_summarizer_api.Services;
+namespace mail_summarizer_api.Services.Graph;
 internal class OnBehalfOfAuthProvider : IAuthenticationProvider
 {
     private readonly IServiceProvider _serviceProvider;

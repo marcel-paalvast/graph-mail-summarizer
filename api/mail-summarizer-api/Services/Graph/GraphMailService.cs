@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using mail_summarizer_api.Settings;
 using Microsoft.Graph.Models;
 
-namespace mail_summarizer_api.Services;
+namespace mail_summarizer_api.Services.Graph;
 public class GraphMailService : IMailService
 {
     private readonly GraphServiceClient _client;

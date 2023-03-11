@@ -10,7 +10,7 @@ using mail_summarizer_api.Settings;
 using System.Net.Http;
 using OpenAI.GPT3.ObjectModels.RequestModels;
 
-namespace mail_summarizer_api.Services;
+namespace mail_summarizer_api.Services.OpenAi;
 internal class OpenAiSummarizeService : ISummarizeService
 {
     private readonly OpenAIService _client;

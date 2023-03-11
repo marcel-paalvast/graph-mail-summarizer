@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace mail_summarizer_api.Services;
+namespace mail_summarizer_api.Services.Graph;
 /// <summary>
 /// Builds a filter that can be used by <see cref="Microsoft.Graph.Me.MailFolders.Item.Messages.MessagesRequestBuilder.MessagesRequestBuilderGetRequestConfiguration"/>
 /// to filter mails to receive based on criteria added by exposed methods of the instance.

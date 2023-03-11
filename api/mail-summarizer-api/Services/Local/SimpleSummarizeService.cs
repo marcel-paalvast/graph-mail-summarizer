@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace mail_summarizer_api.Services;
+namespace mail_summarizer_api.Services.Local;
 public class SimpleSummarizeService : ISummarizeService
 {
     public Task<string> SummarizeAsync(string message)

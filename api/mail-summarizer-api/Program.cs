@@ -1,6 +1,8 @@
 using mail_summarizer_api.Middleware.Authorization;
 using mail_summarizer_api.Middleware.Context;
 using mail_summarizer_api.Services;
+using mail_summarizer_api.Services.Graph;
+using mail_summarizer_api.Services.OpenAi;
 using mail_summarizer_api.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
