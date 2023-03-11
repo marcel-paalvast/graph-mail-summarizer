@@ -12,6 +12,4 @@ public record GetMailOptions
     public DateTime? To { get; set; }
 
     public int? Top { get; set; }
-
-    public string MailFolder { get; set; } = "Inbox";
 }

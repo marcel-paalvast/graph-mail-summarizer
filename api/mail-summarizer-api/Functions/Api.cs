@@ -100,7 +100,6 @@ namespace mail_summarizer_api.Functions
             var mails = await _mailService.GetMailAsync(new() 
             { 
                 Top = 100,
-                MailFolder = "Inbox",
                 From = new DateTime(2023,1,1),
                 To = new DateTime(2024,1,1),
             });

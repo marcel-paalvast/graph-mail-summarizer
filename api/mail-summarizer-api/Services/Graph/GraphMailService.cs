@@ -39,12 +39,11 @@ public class GraphMailService : IMailService
 
         var response = await _client
             .Me
-            .MailFolders[options.MailFolder]
             .Messages
             .GetAsync(c =>
             {
                 c.Headers.Add("Prefer", "outlook.body-content-type='text'");
-                //c.QueryParameters.Select = new[] { "subject", "body", "from", "createdDateTime" };
+                c.QueryParameters.Select = new[] { "subject", "body", "from", "createdDateTime" };
                 c.QueryParameters.Top = options.Top;
                 c.QueryParameters.Filter = filter.ToString();
             });
