@@ -101,6 +101,8 @@ namespace mail_summarizer_api.Functions
             { 
                 Top = 100,
                 MailFolder = "Inbox",
+                From = new DateTime(2023,1,1),
+                To = new DateTime(2024,1,1),
             });
 
             var subjects = string.Join(" & ", mails.Select(x => x.Subject));

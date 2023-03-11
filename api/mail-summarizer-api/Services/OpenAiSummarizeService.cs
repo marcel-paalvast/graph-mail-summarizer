@@ -29,7 +29,7 @@ internal class OpenAiSummarizeService : ISummarizeService
             new ChatCompletionCreateRequest()
             {
                 Messages = new List<ChatMessage>()
-                { 
+                {
                     ChatMessage.FromUser($"Summarize in <128 chars"),
                     ChatMessage.FromUser(message),
                 },

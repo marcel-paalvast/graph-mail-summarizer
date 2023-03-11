@@ -25,8 +25,17 @@ public class GraphMailService : IMailService
     public async Task<IEnumerable<Mail>> GetMailAsync(GetMailOptions options)
     {
         options ??= new();
-        options.From ??= DateTime.MinValue;
-        options.To ??= DateTime.MaxValue;
+
+        var filter = new MailFilterBuilder();
+        filter.AddReceivedFilter();
+        if (options.From is DateTime from)
+        {
+            filter.AddDateFilter(from, DateOperator.GreaterOrEqual);
+        }
+        if (options.To is DateTime to)
+        {
+            filter.AddDateFilter(to, DateOperator.LessThan);
+        }
 
         var response = await _client
             .Me
@@ -35,9 +44,9 @@ public class GraphMailService : IMailService
             .GetAsync(c =>
             {
                 c.Headers.Add("Prefer", "outlook.body-content-type='text'");
-                c.QueryParameters.Select = new[] { "subject", "body", "from", "createdDateTime" };
+                //c.QueryParameters.Select = new[] { "subject", "body", "from", "createdDateTime" };
                 c.QueryParameters.Top = options.Top;
-                c.QueryParameters.Filter = $"ReceivedDateTime ge {options.From:yyyy-MM-ddTHH:mm:ssZ} and ReceivedDateTime lt {options.To:yyyy-MM-ddTHH:mm:ssZ}";
+                c.QueryParameters.Filter = filter.ToString();
             });
 
         return response?
