@@ -141,10 +141,17 @@ public partial class BasicMailGeneratorService : IMailGeneratorService
             return Replace(SummaryTemplate, keywords);
         }));
 
+        var from = input.Options.From;
+        var formatFrom = from.HasValue && from.Value.TimeOfDay.TotalSeconds == 0 ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm:ss";
+
+        var to = input.Options.To;
+        var formatTo = to.HasValue && to.Value.TimeOfDay.TotalNanoseconds == 0 ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm:ss";
+
         var keywords = new Dictionary<string, (bool encode, string value)>
         {
-            ["from"] = (true, input.Options.From?.ToString("yyyy-MM-dd HH:mm:ss") ?? "<No date>"),
-            ["to"] = (true, input.Options.To?.ToString("yyyy-MM-dd HH:mm:ss") ?? "<No date>"),
+            ["from"] = (true, from?.ToString(formatFrom) ?? "<No date>"),
+            ["to"] = (true, to?.ToString(formatTo) ?? "<No date>"),
+            ["count"] = (true, input.Summaries.Count.ToString()),
             ["summaries"] = (false, summaries),
             ["complete"] = (true, input.FullSummary),
         };
