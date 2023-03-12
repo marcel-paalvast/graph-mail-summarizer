@@ -17,7 +17,7 @@ namespace mail_summarizer_api.Services.Graph;
 internal class OnBehalfOfAuthProvider : IAuthenticationProvider
 {
     private readonly IServiceProvider _serviceProvider;
-    private IConfidentialClientApplication _cca;
+    private readonly IConfidentialClientApplication _cca;
     private readonly string[] _scopes;
 
     public OnBehalfOfAuthProvider(GraphSettings settings, string[] scopes, IServiceProvider serviceProvider)
@@ -36,7 +36,7 @@ internal class OnBehalfOfAuthProvider : IAuthenticationProvider
         Dictionary<string, object>? additionalAuthenticationContext = null,
         CancellationToken cancellationToken = default)
     {
-        var context = _serviceProvider.GetService<IFunctionContextAccessor>()?.FunctionContext ?? throw new ArgumentException("Could not retrieve HttpContext");
+        var context = _serviceProvider.GetService<IFunctionContextAccessor>()?.FunctionContext ?? throw new ArgumentException("Could not retrieve function context");
 
         var userRequest = await context.GetHttpRequestDataAsync() ?? throw new ArgumentException("Could not retrieve request");
         var token = GetAccessToken(userRequest) ?? throw new ArgumentException("Expected authorization header");

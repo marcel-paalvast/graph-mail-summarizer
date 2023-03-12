@@ -22,7 +22,7 @@ public class GraphMailService : IMailService
         _client = new GraphServiceClient(httpClient, authProvider);
     }
 
-    public async Task<IEnumerable<Mail>> GetMailAsync(GetMailOptions options)
+    public async Task<IList<Mail>> GetMailAsync(GetMailOptions options)
     {
         options ??= new();
 
@@ -57,7 +57,8 @@ public class GraphMailService : IMailService
                 Body = x.Body?.Content,
                 Subject = x.Subject,
                 Sender = $"{x.From?.EmailAddress?.Name} ({x.From?.EmailAddress?.Address})",
-            }) ?? Enumerable.Empty<Mail>();
+            })
+            .ToList() ?? new List<Mail>();
     }
 
     public async Task SendMailAsync(SendMail mail)

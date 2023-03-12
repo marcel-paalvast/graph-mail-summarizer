@@ -127,9 +127,9 @@ public partial class BasicMailGeneratorService : IMailGeneratorService
         </table>
         """;
 
-    public string Create(GetMailOptions settings, IEnumerable<MailSummary> mailSummaries)
+    public string Create(MailSummaries input)
     {
-        var summaries = string.Join(null, mailSummaries.Select(x =>
+        var summaries = string.Join(null, input.Summaries.Select(x =>
         {
             var keywords = new Dictionary<string, (bool encode, string value)>
             {
@@ -143,9 +143,10 @@ public partial class BasicMailGeneratorService : IMailGeneratorService
 
         var keywords = new Dictionary<string, (bool encode, string value)>
         {
-            ["from"] = (true, settings.From?.ToString("yyyy-MM-dd HH:mm:ss") ?? "<No date>"),
-            ["to"] = (true, settings.To?.ToString("yyyy-MM-dd HH:mm:ss") ?? "<No date>"),
+            ["from"] = (true, input.Options.From?.ToString("yyyy-MM-dd HH:mm:ss") ?? "<No date>"),
+            ["to"] = (true, input.Options.To?.ToString("yyyy-MM-dd HH:mm:ss") ?? "<No date>"),
             ["summaries"] = (false, summaries),
+            ["complete"] = (true, input.FullSummary),
         };
 
         return Replace(Template, keywords);

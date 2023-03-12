@@ -7,8 +7,13 @@ using System.Threading.Tasks;
 namespace mail_summarizer_api.Services.Local;
 public class SimpleSummarizeService : ISummarizeService
 {
-    public Task<string> SummarizeAsync(string message)
+    public Task<string> SummarizeAsync(string? message)
     {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return Task.FromResult("");
+        }
+
         var paragraphs = message.Split(new string[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
         var builder = new StringBuilder();
 
@@ -20,5 +25,16 @@ public class SimpleSummarizeService : ISummarizeService
         }
 
         return Task.FromResult(builder.ToString());
+    }
+
+    public async Task<string> SummarizeAsync(IEnumerable<string> messages)
+    {
+        var builder = new StringBuilder();
+        foreach (var message in messages)
+        {
+            builder.AppendLine(await SummarizeAsync(message));
+        }
+
+        return builder.ToString();
     }
 }

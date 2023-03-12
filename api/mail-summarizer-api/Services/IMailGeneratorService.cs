@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 namespace mail_summarizer_api.Services;
 public interface IMailGeneratorService
 {
-    public string Create(GetMailOptions settings, IEnumerable<MailSummary> mailSummaries);
+    public string Create(MailSummaries summaries);
 }

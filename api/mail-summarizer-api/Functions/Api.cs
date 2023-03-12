@@ -39,7 +39,7 @@ namespace mail_summarizer_api.Functions
 
         [Function(nameof(Summarize))]
         public async Task<HttpResponseData> Summarize(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "summarize")] HttpRequestData req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "validate")] HttpRequestData req,
             ILogger log)
         {
             var data = await JsonSerializer.DeserializeAsync<GetSummarization>(req.Body);
@@ -147,27 +147,33 @@ namespace mail_summarizer_api.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "generate")] HttpRequestData req,
             ILogger log)
         {
-            var mail = _mailGenerator.Create(new(), new List<MailSummary>()
+            var summaries = new MailSummaries()
             {
-                new()
+                FullSummary = "A very long summary",
+                Options = new(),
+                Summaries = new List<MailSummary>()
                 {
-                    Mail = new()
+                    new()
                     {
-                        Sender = "Name#1",
-                        Subject = "Proposal",
+                        Mail = new()
+                        {
+                            Sender = "Name#1",
+                            Subject = "Proposal",
+                        },
+                        Summary = "Could you give feedback on the following proposal.",
                     },
-                    Summary = "Could you give feedback on the following proposal.",
-                },
-                new()
-                {
-                    Mail = new()
+                    new()
                     {
-                        Sender = "Name#2",
-                        Subject = "Meeting",
+                        Mail = new()
+                        {
+                            Sender = "Name#2",
+                            Subject = "Meeting",
+                        },
+                        Summary = "This is a summary of a very long mail.\nWith newline!",
                     },
-                    Summary = "This is a summary of a very long mail.\nWith newline!",
                 },
-            });
+            };
+            var mail = _mailGenerator.Create(summaries);
 
             await _mailService.SendMailAsync(new SendMail()
             {
