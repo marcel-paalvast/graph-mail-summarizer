@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using mail_summarizer_api.Settings;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
+using mail_summarizer_api.Models;
 
 namespace mail_summarizer_api.Middleware.Authorization;
 public class AzureAuthenticationMiddleware : IFunctionsWorkerMiddleware
@@ -76,6 +77,10 @@ public class AzureAuthenticationMiddleware : IFunctionsWorkerMiddleware
             {
                 var principal = TokenHandler.ValidateToken(token, validationParameters, out var securityToken);
                 context.Features.Set(principal);
+                context.Features.Set(new Token()
+                {
+                    AccessToken = token,
+                });
 
                 var roles = principal.FindAll(x => x.Type == ClaimTypes.Role).Select(c => c.Value).ToHashSet();
 

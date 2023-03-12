@@ -37,9 +37,11 @@ namespace mail_summarizer_api.Functions
 
         [Function(nameof(SummarizeMails))]
         public async Task<string> RunOrchestrator(
-            [OrchestrationTrigger] TaskOrchestrationContext context, GetMailOptions input)
+            [OrchestrationTrigger] TaskOrchestrationContext context, TokenExtensions<GetMailOptions> input)
         {
             ILogger logger = context.CreateReplaySafeLogger(nameof(SummarizeMails));
+            var mailOptions = input.Value;
+            var token = input.Token;
 
             logger.LogInformation("Obtaining mails.");
 
@@ -55,7 +57,7 @@ namespace mail_summarizer_api.Functions
             }
 
             var summarizeTasks = new List<Task<MailSummary>>();
-            
+
             foreach (var mail in mails)
             {
                 summarizeTasks.Add(context.CallActivityAsync<MailSummary>(nameof(SummarizeAsync), mail, options));
@@ -80,18 +82,37 @@ namespace mail_summarizer_api.Functions
 
             var fullSummary = await context.CallActivityAsync<string>(nameof(SummarizeAllAsync), summaries, options);
 
-            var mailTemplate = await context.CallActivityAsync<string>(nameof(CreateMailTemplate), summaries, options);
-            await context.CallActivityAsync<string>(nameof(SendMailAsync), summaries, options);
+            var summary = new MailSummaries()
+            {
+                FullSummary = fullSummary,
+                Summaries = summaries,
+                Options = mailOptions,
+            };
 
-            return $"Summary of mails has been sent to {input.Recipient}";
+            var mailBody = await context.CallActivityAsync<string>(nameof(CreateMailTemplate), summary, options);
+
+            var sendMail = new TokenExtensions<SendMail>()
+            {
+                Token = token,
+                Value = new SendMail()
+                { 
+                    Body = mailBody,
+                    Recipient = mailOptions.Recipient,
+                    Subject = "Your mail summary",
+                },
+            };
+            await context.CallActivityAsync<string>(nameof(SendMailAsync), sendMail, options);
+
+            return $"Summary of mails has been sent to {mailOptions.Recipient}";
         }
 
         [Function(nameof(GetMailAsync))]
-        public async Task<IList<Mail>> GetMailAsync([ActivityTrigger] GetMailOptions options, FunctionContext executionContext)
+        public async Task<IList<Mail>> GetMailAsync([ActivityTrigger] TokenExtensions<GetMailOptions> options, FunctionContext executionContext)
         {
             ILogger logger = executionContext.GetLogger(nameof(GetMailAsync));
+            executionContext.Features.Set(options.Token);
             logger.LogInformation("Obtaining mails of user");
-            return await _mailService.GetMailAsync(options);
+            return await _mailService.GetMailAsync(options.Value);
         }
 
         [Function(nameof(SummarizeAsync))]
@@ -132,12 +153,13 @@ namespace mail_summarizer_api.Functions
         }
 
         [Function(nameof(SendMailAsync))]
-        public async Task SendMailAsync([ActivityTrigger] SendMail mail, FunctionContext executionContext)
+        public async Task SendMailAsync([ActivityTrigger] TokenExtensions<SendMail> mail, FunctionContext executionContext)
         {
             ILogger logger = executionContext.GetLogger(nameof(SendMailAsync));
+            executionContext.Features.Set(mail.Token);
             logger.LogInformation("Sending mail");
 
-            await _mailService.SendMailAsync(mail);
+            await _mailService.SendMailAsync(mail.Value);
         }
 
         //[Function(nameof(SayHello))]
@@ -157,11 +179,6 @@ namespace mail_summarizer_api.Functions
         {
             ILogger logger = executionContext.GetLogger("SummarizeMails_HttpStart");
 
-            executionContext.Features.Set<Mail>(new()
-            {
-                Subject = "Test"
-            });
-
             var data = await JsonSerializer.DeserializeAsync<GetSummarization>(req.Body);
             var results = new List<ValidationResult>();
             if (data is null || !Validator.TryValidateObject(data, new ValidationContext(data), results, true))
@@ -170,6 +187,18 @@ namespace mail_summarizer_api.Functions
                 response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
 
                 response.WriteString(string.Join(' ', results));
+
+                return response;
+            }
+
+            var token = executionContext.Features.Get<Token>();
+
+            if (token is null)
+            {
+                var response = req.CreateResponse(HttpStatusCode.BadRequest);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString("No token found");
 
                 return response;
             }
@@ -186,12 +215,16 @@ namespace mail_summarizer_api.Functions
                 return response;
             }
 
-            var mailOptions = new GetMailOptions()
+            var mailOptions = new TokenExtensions<GetMailOptions>()
             {
-                From = data.From,
-                To = data.To,
-                Top = 100,
-                Recipient = userMailAddress,
+                Token = token,
+                Value = new GetMailOptions
+                {
+                    From = data.From,
+                    To = data.To,
+                    Top = 100,
+                    Recipient = userMailAddress,
+                },
             };
 
             string instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(SummarizeMails), mailOptions);

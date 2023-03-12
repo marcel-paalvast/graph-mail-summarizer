@@ -12,6 +12,7 @@ using Microsoft.Identity.Client;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker;
 using mail_summarizer_api.Middleware.Context;
+using mail_summarizer_api.Models;
 
 namespace mail_summarizer_api.Services.Graph;
 internal class OnBehalfOfAuthProvider : IAuthenticationProvider
@@ -37,22 +38,11 @@ internal class OnBehalfOfAuthProvider : IAuthenticationProvider
         CancellationToken cancellationToken = default)
     {
         var context = _serviceProvider.GetService<IFunctionContextAccessor>()?.FunctionContext ?? throw new ArgumentException("Could not retrieve function context");
+        var token = context.Features.Get<Token>() ?? throw new ArgumentException($"Could not retrieve {nameof(Token)} from context");
 
-        var userRequest = await context.GetHttpRequestDataAsync() ?? throw new ArgumentException("Could not retrieve request");
-        var token = GetAccessToken(userRequest) ?? throw new ArgumentException("Expected authorization header");
-        var assertion = new UserAssertion(token);
+        var assertion = new UserAssertion(token.AccessToken);
         var result = await _cca.AcquireTokenOnBehalfOf(_scopes, assertion).ExecuteAsync(cancellationToken);
 
         request.Headers.Add("Authorization", $"Bearer {result.AccessToken}");
-    }
-
-    private static string? GetAccessToken(HttpRequestData request)
-    {
-        if (!request.Headers.TryGetValues("Authorization", out var headers))
-        {
-            return null;
-        }
-        var split = headers.First().Split(' ');
-        return split.Length == 2 && split[0] == "Bearer" ? split[1] : null;
     }
 }
