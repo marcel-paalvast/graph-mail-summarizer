@@ -11,6 +11,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Net;
 using mail_summarizer_api.Middleware.Authorization;
+using System.Security.Claims;
 
 namespace mail_summarizer_api.Functions
 {
@@ -20,17 +21,20 @@ namespace mail_summarizer_api.Functions
         private readonly ISummarizeService _summarizer;
         private readonly IMailService _mailService;
         private readonly IMailGeneratorService _mailGenerator;
+        private readonly IUserInfoService _userInfo;
 
         public Api(
             ILoggerFactory loggerFactory, 
             ISummarizeService summarizer, 
             IMailService mailService,
-            IMailGeneratorService mailGenerator)
+            IMailGeneratorService mailGenerator,
+            IUserInfoService userInfo)
         {
             _logger = loggerFactory.CreateLogger<Api>();
             _summarizer = summarizer;
             _mailService = mailService;
             _mailGenerator = mailGenerator;
+            _userInfo = userInfo;
         }
 
         [Function(nameof(Summarize))]
@@ -177,6 +181,34 @@ namespace mail_summarizer_api.Functions
                 response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
 
                 response.WriteString("Sent!");
+
+                return response;
+            }
+        }
+
+        [Authorize]
+        [Function(nameof(GetAddress))]
+        public async Task<HttpResponseData> GetAddress(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "address")] HttpRequestData req,
+            ILogger log)
+        {
+            var mail = _userInfo.GetMailAddress();
+
+            if (mail is null)
+            {
+                var response = req.CreateResponse(HttpStatusCode.BadRequest);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString("Token contains no valid mail address");
+
+                return response;
+            }
+
+            {
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString(mail);
 
                 return response;
             }

@@ -2,6 +2,7 @@ using mail_summarizer_api.Middleware.Authorization;
 using mail_summarizer_api.Middleware.Context;
 using mail_summarizer_api.Services;
 using mail_summarizer_api.Services.Graph;
+using mail_summarizer_api.Services.Jwt;
 using mail_summarizer_api.Services.OpenAi;
 using mail_summarizer_api.Settings;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,7 @@ var host = new HostBuilder()
         s.AddSingleton<ISummarizeService, OpenAiSummarizeService>();
 
         s.AddSingleton<IMailGeneratorService, BasicMailGeneratorService>();
+        s.AddScoped<IUserInfoService, TokenUserInfoService>();
     })
     .Build();
 
