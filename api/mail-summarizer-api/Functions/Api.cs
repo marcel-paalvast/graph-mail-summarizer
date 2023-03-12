@@ -157,7 +157,7 @@ namespace mail_summarizer_api.Functions
                     {
                         Mail = new()
                         {
-                            Sender = "Name#1",
+                            Sender = new() { Name = "Name#1" },
                             Subject = "Proposal",
                         },
                         Summary = "Could you give feedback on the following proposal.",
@@ -166,7 +166,7 @@ namespace mail_summarizer_api.Functions
                     {
                         Mail = new()
                         {
-                            Sender = "Name#2",
+                            Sender = new() { Name = "Name#2" },
                             Subject = "Meeting",
                         },
                         Summary = "This is a summary of a very long mail.\nWith newline!",
@@ -194,7 +194,7 @@ namespace mail_summarizer_api.Functions
 
         [Authorize]
         [Function(nameof(GetAddress))]
-        public async Task<HttpResponseData> GetAddress(
+        public HttpResponseData GetAddress(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "address")] HttpRequestData req,
             ILogger log)
         {

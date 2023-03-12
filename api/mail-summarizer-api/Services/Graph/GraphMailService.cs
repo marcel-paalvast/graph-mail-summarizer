@@ -56,7 +56,11 @@ public class GraphMailService : IMailService
                 CreatedDateTime = x.CreatedDateTime,
                 Body = x.Body?.Content,
                 Subject = x.Subject,
-                Sender = $"{x.From?.EmailAddress?.Name} ({x.From?.EmailAddress?.Address})",
+                Sender = new()
+                {
+                    Name = x.From?.EmailAddress?.Name,
+                    Email = x.From?.EmailAddress?.Address,
+                },
             })
             .ToList() ?? new List<Mail>();
     }

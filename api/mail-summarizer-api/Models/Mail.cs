@@ -8,7 +8,7 @@ namespace mail_summarizer_api.Models;
 public record Mail
 {
     public string? Subject { get; set; }
-    public string? Sender { get; set; }
+    public Sender? Sender { get; set; }
     public string? Body { get; set; }
     public DateTimeOffset? CreatedDateTime { get; set; }
 }

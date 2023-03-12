@@ -53,7 +53,7 @@ public partial class BasicMailGeneratorService : IMailGeneratorService
 
               .timestamp {
                 font-family: Consolas, monaco, monospace;
-                color: #d3d3d3;
+                color: #959595;
                 font-size: 12px;
               }
 
@@ -80,7 +80,7 @@ public partial class BasicMailGeneratorService : IMailGeneratorService
                 <td align="center" style="padding:0;">
                   <table class="main" style="width: 700px">
                     <tr>
-                      <td style="padding: 40px; background-color: #7cc4e1;">
+                      <td style="padding: 40px; background-color: #95d7f2;">
                         <h2 class="title">Your personal mail summary!</h2>
                         <span>From ${from} till ${to} you've received ${count} mails. Here's a short summary of all the mails followed by a summary of each seperate mail!</span>
                         <br><br>
@@ -135,7 +135,7 @@ public partial class BasicMailGeneratorService : IMailGeneratorService
             {
                 ["subject"] = (true, x.Mail.Subject ?? "<No subject>"),
                 ["summary"] = (true, x.Summary),
-                ["sender"] =(true, x.Mail.Sender ?? "Unknown"),
+                ["sender"] =(true, x.Mail.Sender is Sender sender && sender.Email is not null ? $"{sender.Name}\n<{sender.Email}>" : "<Unknown>"),
                 ["timestamp"] = (true, x.Mail.CreatedDateTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "<No date>"),
             };
             return Replace(SummaryTemplate, keywords);
