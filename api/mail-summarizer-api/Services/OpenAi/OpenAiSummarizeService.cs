@@ -22,7 +22,7 @@ internal class OpenAiSummarizeService : ISummarizeService
         }, httpClient);
     }
 
-    public async Task<string> SummarizeAsync(string message)
+    public async Task<string> SummarizeAsync(string? message)
     {
         if (string.IsNullOrWhiteSpace(message))
         {
@@ -62,7 +62,8 @@ internal class OpenAiSummarizeService : ISummarizeService
     {
         var chat = new List<ChatMessage>()
         {
-            ChatMessage.FromUser("Make a single summary of the following messages and filter out information that isn't priority in <512 chars without bullet points:")
+            ChatMessage.FromUser("Make a single summary of the following messages and " +
+            "filter out information that isn't priority in <512 chars without bullet points:")
         };
 
         var length = 0;

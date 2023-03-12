@@ -43,8 +43,6 @@ namespace mail_summarizer_api.Functions
             var mailOptions = input.Value;
             var token = input.Token;
 
-            logger.LogInformation("Obtaining mails.");
-
             var options = TaskOptions.FromRetryPolicy(new(
                 maxNumberOfAttempts: 3,
                 firstRetryInterval: TimeSpan.FromSeconds(5)));
@@ -53,7 +51,7 @@ namespace mail_summarizer_api.Functions
 
             if (mails.Count == 0)
             {
-                return "No mails found";
+                return "No mails found to retrieve";
             }
 
             var summarizeTasks = new List<Task<MailSummary>>();
@@ -71,7 +69,7 @@ namespace mail_summarizer_api.Functions
             {
                 if (summarizeTasks.Where(x => x.Status == TaskStatus.RanToCompletion).Count() < 0.5 * summarizeTasks.Count)
                 {
-                    return "Too many errors occured during summarizaton";
+                    return "Too many errors occured during summarization";
                 }
             }
 
@@ -89,7 +87,7 @@ namespace mail_summarizer_api.Functions
                 Options = mailOptions,
             };
 
-            var mailBody = await context.CallActivityAsync<string>(nameof(CreateMailTemplate), summary, options);
+            var mailBody = await context.CallActivityAsync<string>(nameof(CreateMailTemplate), summary);
 
             var sendMail = new TokenExtensions<SendMail>()
             {
@@ -161,14 +159,6 @@ namespace mail_summarizer_api.Functions
 
             await _mailService.SendMailAsync(mail.Value);
         }
-
-        //[Function(nameof(SayHello))]
-        //public string SayHello([ActivityTrigger] string name, FunctionContext executionContext)
-        //{
-        //    ILogger logger = executionContext.GetLogger("SayHello");
-        //    logger.LogInformation("Saying hello to {name}.", name);
-        //    return $"Hello {name}!";
-        //}
 
         [Authorize]
         [Function(nameof(HttpStart))]
