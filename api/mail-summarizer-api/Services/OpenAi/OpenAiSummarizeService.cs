@@ -62,8 +62,7 @@ internal class OpenAiSummarizeService : ISummarizeService
     {
         var chat = new List<ChatMessage>()
         {
-            ChatMessage.FromUser("Make a single summary of the following messages and " +
-            "filter out information that isn't priority in <512 chars without bullet points:")
+            ChatMessage.FromUser("Make a summary of all of the following mails in <512 chars without bullet points:")
         };
 
         var length = 0;
@@ -77,10 +76,9 @@ internal class OpenAiSummarizeService : ISummarizeService
             }
             else
             {
-                chat.Add(ChatMessage.FromUser(message[..^(length - 3000)]));
+                chat.Add(ChatMessage.FromUser(message[..^(length - 10_000)]));
                 break;
             }
-
         }
 
         var response = await _client.CreateCompletion(

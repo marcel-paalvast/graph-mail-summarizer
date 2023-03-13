@@ -192,6 +192,33 @@ namespace mail_summarizer_api.Functions
             }
         }
 
+        [Function(nameof(GenerateFullSummary))]
+        public async Task<HttpResponseData> GenerateFullSummary(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "fullsummary")] HttpRequestData req,
+            ILogger log)
+        {
+            var summaries = new List<string>()
+            {
+                "John seeks Jane's expertise in social media marketing to develop a new strategy for their company. He wants to improve their social media presence and engagement with the audience.",
+                "David follows up on proposal to important client. Asks for feedback and updates from Sarah. Committed to addressing client needs and concerns.",
+                "Lisa provided feedback on website redesign. New design is visually appealing but needs more prominent calls to action and streamlined navigation.",
+                "Tom requests a meeting with Mike to discuss budget for next quarter, review previous spending and identify areas for cost savings.",
+                "Proposal submitted for website redesign project with detailed plan, cost breakdown, and key features to enhance user experience and achieve goals.",
+                "Product launch project progressing well, on track to meet deadline. Completed product development/testing, focusing on marketing/sales strategies."
+            };
+
+            var summary = await _summarizer.SummarizeAsync(summaries);
+
+            {
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+                response.WriteString(summary);
+
+                return response;
+            }
+        }
+
         [Authorize]
         [Function(nameof(GetAddress))]
         public HttpResponseData GetAddress(
