@@ -19,8 +19,9 @@ const apiConfig: ApiSettings = {
 function App() {
   const { instance, accounts } = useMsal();
 
-  const [minDate, setMinDate] = useState<Dayjs | null>(dayjs().startOf('day').add(-1, 'week'));
-  const [maxDate, setMaxDate] = useState<Dayjs | null>(dayjs().startOf('day'));
+  const [today] = useState(dayjs().startOf('day'));
+  const [minDate, setMinDate] = useState<Dayjs | null>(today.add(-1, 'week'));
+  const [maxDate, setMaxDate] = useState<Dayjs | null>(today);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string>();
 
@@ -110,7 +111,7 @@ function App() {
                 <DateCalendar
                   value={maxDate}
                   onChange={(newValue) => setMaxDate(newValue)}
-                  maxDate={dayjs().startOf('day')}
+                  maxDate={today}
                   minDate={minDate}
                   views={['day']}
                   sx={{
