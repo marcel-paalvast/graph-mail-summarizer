@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 namespace mail_summarizer_api.Models;
 public class Token
 {
-    public string AccessToken { get; set; }
+    public required string AccessToken { get; set; }
 }
