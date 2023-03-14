@@ -23,6 +23,7 @@ function App() {
   const [minDate, setMinDate] = useState<Dayjs | null>(today.add(-1, 'week'));
   const [maxDate, setMaxDate] = useState<Dayjs | null>(today);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [result, setResult] = useState<string>();
 
   const requestAccessToken = useCallback(async (): Promise<string> => {
@@ -65,6 +66,7 @@ function App() {
     try {
       await api.GenerateSummary(options);
       setResult("You'll receive the summary shortly through mail!");
+      setSuccess(true);
     } catch (e) {
       if (typeof e === 'string') {
         setResult(e);
@@ -121,17 +123,18 @@ function App() {
             </LocalizationProvider>
             <Box sx={{
               display: 'flex',
+              flexWrap: 'wrap',
               justifyContent: 'center',
-              width: '100%'
+              width: '100%',
             }}>
               {
-                !result && (loading ?
+                !success && (loading ?
                   <CircularProgress size={32} /> :
                   <Button size='large' onClick={() => Summarize()}>Summarize</Button>)
               }
               {
                 result &&
-                <Typography color="primary">{result}</Typography>
+                <Typography color="primary" width={1} textAlign='center'>{result}</Typography>
               }
             </Box>
           </AuthenticatedTemplate>
