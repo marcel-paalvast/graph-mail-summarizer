@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 
 namespace mail_summarizer_api.Middleware.Context;
 
+/// <summary>
+/// Allows the retrieval of the function context through DI.
+/// </summary>
 /// <remarks>
-/// Source: <see cref="https://gist.github.com/dolphinspired/796d26ebe1237b78ee04a3bff0620ea0"/>.
+/// Source: <see href="https://gist.github.com/dolphinspired/796d26ebe1237b78ee04a3bff0620ea0"/>.
 /// </remarks>
 public class FunctionContextMiddleware : IFunctionsWorkerMiddleware
 {

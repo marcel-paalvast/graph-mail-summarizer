@@ -18,6 +18,12 @@ using System.Security.Claims;
 using mail_summarizer_api.Models;
 
 namespace mail_summarizer_api.Middleware.Authorization;
+/// <summary>
+/// Checks for an Azure jwt token in the header and validates it using Azure AD.
+/// </summary>
+/// <remarks>
+/// Created for the use of v2.0 tokens.
+/// </remarks>
 public class AzureAuthenticationMiddleware : IFunctionsWorkerMiddleware
 {
     readonly JwtSecurityTokenHandler TokenHandler = new();
@@ -31,6 +37,7 @@ public class AzureAuthenticationMiddleware : IFunctionsWorkerMiddleware
         var openIdUri = $"https://login.microsoftonline.com/{Settings.TenantId}/v2.0/.well-known/openid-configuration";
         ConfigManager = new ConfigurationManager<OpenIdConnectConfiguration>(openIdUri, new OpenIdConnectConfigurationRetriever());
 
+        //obtains all functions exposed in the app and collect all AuthorizeAttributes
         FunctionAuthorizations = Assembly
             .GetExecutingAssembly()
             .GetTypes()
