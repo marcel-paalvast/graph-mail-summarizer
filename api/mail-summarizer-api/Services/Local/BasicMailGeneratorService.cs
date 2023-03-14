@@ -34,8 +34,9 @@ public partial class BasicMailGeneratorService : IMailGeneratorService
                 font-family: Georgia, Arial, Helvetica, sans-serif;
               }
 
-              td > .mail:last-child {
-                border: 0;
+              .head {
+                padding: 40px;
+                background-color: #95d7f2;
               }
 
               .mail {
@@ -80,9 +81,9 @@ public partial class BasicMailGeneratorService : IMailGeneratorService
                 <td align="center" style="padding:0;">
                   <table class="main" style="width: 700px">
                     <tr>
-                      <td style="padding: 40px; background-color: #95d7f2;">
+                      <td class="head">
                         <h2 class="title">Your personal mail summary!</h2>
-                        <span>From ${from} till ${to} you've received ${count} mails. Here's a short summary of all the mails followed by a summary of each seperate mail!</span>
+                        <span>From ${from} till ${to} you've received ${count} mails. Here's a quick summary of what you've missed!</span>
                         <br><br>
                         <span>${complete}</span>
                       </td>
