@@ -11,9 +11,9 @@ public record GetSummarization
 {
     [Required]
     [JsonPropertyName("from")]
-    public DateTime? From { get; set; }
+    public DateTimeOffset? From { get; set; }
 
     [Required]
     [JsonPropertyName("to")]
-    public DateTime? To { get; set; }
+    public DateTimeOffset? To { get; set; }
 }

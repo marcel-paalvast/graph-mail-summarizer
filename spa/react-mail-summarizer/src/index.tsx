@@ -6,8 +6,12 @@ import reportWebVitals from './reportWebVitals';
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
 import { msalConfig } from './auth/MsalConfig';
+import dayjs from 'dayjs';
 
 export const msalInstance = new PublicClientApplication(msalConfig);
+
+//used to add offset to JSON string representation of dayjs instance
+dayjs.prototype.toJSON = function () { return this.format() };
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

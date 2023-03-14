@@ -28,13 +28,13 @@ public class GraphMailService : IMailService
 
         var filter = new MailFilterBuilder();
         filter.AddReceivedFilter();
-        if (options.From is DateTime from)
+        if (options.From is DateTimeOffset from)
         {
-            filter.AddDateFilter(from, DateOperator.GreaterOrEqual);
+            filter.AddDateFilter(from.UtcDateTime, DateOperator.GreaterOrEqual);
         }
-        if (options.To is DateTime to)
+        if (options.To is DateTimeOffset to)
         {
-            filter.AddDateFilter(to, DateOperator.LessThan);
+            filter.AddDateFilter(to.UtcDateTime, DateOperator.LessThan);
         }
 
         var response = await _client
