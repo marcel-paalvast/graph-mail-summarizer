@@ -33,7 +33,7 @@ public class MailFilterBuilder
     /// <summary>
     /// Filters out messages that are read.
     /// </summary>
-    public void AddUnreadFilter()
+    public void AddReadFilter()
     {
         _filters.Add("isRead eq false");
     }

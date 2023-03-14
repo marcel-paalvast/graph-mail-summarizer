@@ -12,4 +12,5 @@ public record GetMailOptions
     public DateTimeOffset? To { get; set; }
     public int? Top { get; set; }
     public string? Recipient { get; set; }
+    public bool ExcludeRead { get; set; }
 }

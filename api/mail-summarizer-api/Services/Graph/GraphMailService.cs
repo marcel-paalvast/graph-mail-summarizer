@@ -36,6 +36,10 @@ public class GraphMailService : IMailService
         {
             filter.AddDateFilter(to.UtcDateTime, DateOperator.LessThan);
         }
+        if (options.ExcludeRead)
+        {
+            filter.AddReadFilter();
+        }
 
         var response = await _client
             .Me
