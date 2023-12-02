@@ -6,6 +6,8 @@ Mail Summarizer is a web application that helps you manage your emails more effi
 
 Using the application is easy. Simple connect to your email account you want summarized. Select the start and end date to filter a date range and let the app analyze your mailbox. Within a moment you'll receive a summary that captures the key information and main ideas in your inbox.
 
+https://user-images.githubusercontent.com/126659601/225466703-5882a50a-8e9e-4bf3-9872-d1c49939e191.mp4
+
 ## Key Features
 
 The application features a single page application (SPA) that makes a request to a backend api. The api is setup as durable function app that leverages the jwt token retrieved in the request to retrieve your mails using the Azure on-behalf-of authentication flow.
